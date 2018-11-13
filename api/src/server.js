@@ -9,11 +9,15 @@
     jwksUri: 'https://kabiyesi.auth0.com/.well-known/jwks.json'
   });
 
-  function getKey(header, cb){
-    client.getSigningKey(header.kid, function(err, key) {
-      var signingKey = key.publicKey || key.rsaPublicKey;
-      cb(null, signingKey);
-    });
+  const getKey = (header, callback) => {
+    client.getSigningKey(header.kid, (err, key) => {
+      if (err) {
+        callback(err)
+      } else {
+        var signingKey = key.publicKey || key.rsaPublicKey
+        callback(null, signingKey)
+      }
+    })
   }
 
   const options = {
