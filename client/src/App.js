@@ -10,10 +10,15 @@ import auth from './Auth';
 
 class App extends Component {
 
+  state = {
+    tryingSilent: true
+  };
+
   async componentDidMount() {
     if (this.props.location.pathname === '/callback') return;
     try {
       await auth.silentAuth();
+      this.setState({ tryingSilent: false });
       this.forceUpdate();
     } catch (err) {
       if (err.error === 'login_required') return;
@@ -22,14 +27,18 @@ class App extends Component {
   }
 
   render() {
-    return (
-      <div>
-        <Nav />
-        <Route exact path='/' component={ListBook} />
-        <GuardedRoute path='/create' component={CreateBook} />
-        <Route exact path='/callback' component={Callback} />
-      </div>
-    );
+    if (!this.state.tryingSilent) {
+      return (
+        <div>
+          <Nav />
+          <Route exact path='/' component={ListBook} />
+          <GuardedRoute path='/create' component={CreateBook} />
+          <Route exact path='/callback' component={Callback} />
+        </div>
+      );
+    }
+
+    return 'Logging in silently';
   }
 }
 
